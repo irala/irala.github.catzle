@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#FBF3E8">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23fbf3e8'/%3E%3Cg fill='%234a3529'%3E%3Cellipse cx='50' cy='63' rx='21' ry='17'/%3E%3Cellipse cx='27' cy='45' rx='8' ry='11'/%3E%3Cellipse cx='43' cy='33' rx='8' ry='11'/%3E%3Cellipse cx='59' cy='33' rx='8' ry='11'/%3E%3Cellipse cx='75' cy='45' rx='8' ry='11'/%3E%3C/g%3E%3C/svg%3E">
+  <meta name="description" content="Catzle, un puzle de gatitos con pestañas. Un regalo de Navidad para Sagrario.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>Catzle · Un puzle de gatitos</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <canvas id="game" aria-label="Catzle: puzle de gatitos. Arrastra cada pieza hasta su lugar."></canvas>
+
+  <button type="button" class="sound-btn" id="btn-sound" aria-pressed="true" aria-label="Silenciar sonido" aria-keyshortcuts="M" title="Silenciar sonido (M)">
+    <svg class="ico-sound-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M4 9.2v5.6h3.5L13 19V5L7.5 9.2H4Z"/>
+      <path d="M16 8.6a4.8 4.8 0 0 1 0 6.8"/>
+      <path d="M18.4 6.2a8 8 0 0 1 0 11.6"/>
+    </svg>
+    <svg class="ico-sound-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M4 9.2v5.6h3.5L13 19V5L7.5 9.2H4Z"/>
+      <path d="M16.2 9.2 21 14M21 9.2l-4.8 4.8"/>
+    </svg>
+  </button>
+
+  <header class="hud" id="hud" hidden>
+    <div class="hud-top">
+      <div class="hud-title">
+        <p class="hud-eyebrow" id="hud-level">Nivel 1 de 6</p>
+        <h1 class="hud-name" id="hud-name">Primer ronroneo</h1>
+      </div>
+      <div class="hud-actions">
+        <button type="button" class="icon-btn" id="btn-guide" aria-pressed="true" aria-label="Mostrar u ocultar la guía de la foto" title="Guía de la foto">
+          <svg class="ico-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M2.7 12S6.2 6.5 12 6.5 21.3 12 21.3 12 17.8 17.5 12 17.5 2.7 12 2.7 12Z"/>
+            <circle cx="12" cy="12" r="2.6"/>
+          </svg>
+          <svg class="ico-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M2.7 12S6.2 6.5 12 6.5 21.3 12 21.3 12 17.8 17.5 12 17.5 2.7 12 2.7 12Z"/>
+            <circle cx="12" cy="12" r="2.6"/>
+            <path d="M4 20 20 4"/>
+          </svg>
+        </button>
+        <button type="button" class="icon-btn" id="btn-tidy" aria-label="Ordenar las piezas en la bandeja" title="Ordenar las piezas">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="3" width="7" height="7" rx="2"/>
+            <rect x="14" y="3" width="7" height="7" rx="2"/>
+            <rect x="3" y="14" width="7" height="7" rx="2"/>
+            <path d="M17.5 14v7M14 17.5h7"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="hud-progress">
+      <div class="progress-track" id="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="0 piezas colocadas">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <p class="progress-label" id="progress-label">0 / 0</p>
+    </div>
+  </header>
+
+  <div class="overlay" id="overlay" hidden>
+    <section class="panel" role="dialog" aria-labelledby="ov-title" aria-describedby="ov-text">
+      <p class="eyebrow" id="ov-eyebrow"></p>
+      <h2 class="panel-title" id="ov-title"></h2>
+      <canvas class="panel-art" id="ov-art" width="340" height="340" aria-hidden="true"></canvas>
+      <p class="panel-text" id="ov-text"></p>
+      <p class="panel-note" id="ov-note" hidden></p>
+      <div class="panel-actions">
+        <button type="button" class="btn btn-primary" id="ov-primary"></button>
+      </div>
+      <p class="panel-foot" id="ov-foot"></p>
+    </section>
+  </div>
+
+  <div class="sheet" id="sheet" hidden>
+    <div class="sheet-inner" role="dialog" aria-labelledby="sheet-title">
+      <div class="sheet-grip" aria-hidden="true"></div>
+      <div class="sheet-row">
+        <canvas class="sheet-thumb" id="sheet-thumb" width="160" height="160" aria-hidden="true"></canvas>
+        <div class="sheet-copy">
+          <p class="eyebrow" id="sheet-eyebrow">Nivel completado</p>
+          <h2 class="sheet-title" id="sheet-title">¡Qué bonito!</h2>
+          <p class="sheet-meta" id="sheet-meta"></p>
+        </div>
+      </div>
+      <button type="button" class="btn btn-primary" id="sheet-next">Siguiente gatito</button>
+    </div>
+  </div>
+
+  <p class="sr-only" id="live" role="status" aria-live="polite"></p>
+
+  <div class="safe-probe" id="safe-probe" aria-hidden="true"></div>
+
+  <script src="game.js" defer></script>
+</body>
+</html>
